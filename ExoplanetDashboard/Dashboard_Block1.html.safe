@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observations Table</title>
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        .container-fluid {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            /* Set minimum width for the container */
+            min-width: 1200px;
+            /* Add padding for wide screens */
+            padding-left: 40px;
+            padding-right: 40px;
+            /* Enable horizontal scrolling if needed */
+            overflow-x: auto;
+        }
+        .table-responsive {
+            /* Enable horizontal scrolling for the table */
+            overflow-x: auto;
+            /* Prevent unnecessary vertical scrolling */
+            overflow-y: hidden;
+        }
+        .filter-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .filter-section select, .filter-section input {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .filter-row {
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .dataTables_wrapper {
+            margin-top: 20px;
+        }
+        table.dataTable thead th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .status-archived {
+            color: #198754;
+        }
+        .status-pending {
+            color: #dc3545;
+        }
+        .numeric-filter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .numeric-filter select, .numeric-filter input {
+            flex: 1;
+        }
+        .filter-group {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .filter-group h6 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+        .add-filter-btn {
+            margin-bottom: 15px;
+        }
+        .remove-filter {
+            cursor: pointer;
+            color: #dc3545;
+        }
+        .pdf-viewer {
+            width: 100%;
+            height: 800px;
+            border: none;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .pdf-viewer {
+                height: 500px;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            color: #4b5563;
+        }
+
+        .card {
+            background: var(--card-background);
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-background);
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .stat-hours {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+
+        .main-plot {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            margin: 0 auto;
+            display: block;
+            border-radius: 0.5rem;
+        }
+
+        .plots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .plot-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+        }
+
+        .plot-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .external-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .external-link:hover {
+            text-decoration: underline;
+        }
+
+        .external-link-icon {
+            width: 16px;
+            height: 16px;
+            margin-left: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>JWST Exoplanet Dashboard</h1>
+            <p>
+                This page combines 
+                <a href="https://www.stsci.edu/~nnikolov/TrExoLiSTS/JWST/trexolists.html" class="external-link">
+                    Trexolist
+                    <svg class="external-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                </a>
+                with the 
+                <a href="https://exoplanetarchive.ipac.caltech.edu/" class="external-link">
+                    NASA Exoplanet Archive
+                    <svg class="external-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                </a>
+                and 
+                <a href="https://exo.mast.stsci.edu/" class="external-link">
+                    Exo.MAST
+                    <svg class="external-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                </a>
+                to understand what <i>kinds</i> of planets JWST has observed.
+            </p>
+        </header>
+
+        <section class="card">
+            <h2>Statistics</h2>
+            <div class="stats-grid" id="statsGrid">
+                <!-- Stats will be populated by JavaScript -->
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Population Distribution</h2>
+            <img src="population.png" alt="Population of exoplanets, observed and planned with JWST" class="main-plot">
+        </section>
+
+        <section class="card">
+            <h2>Additional Plots</h2>
+            <div class="plots-grid" id="plotsGrid">
+                <!-- Plots will be populated by JavaScript -->
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Stats data
+        const stats = [
+            { label: 'Planets observed', value: '92' },
+            { label: 'Total hours observed', value: '2,622' },
+            { label: 'Additional planets planned', value: '29' },
+            { label: 'Rocky planets observed (incl. planned)', value: '24', hours: '683' },
+            { label: 'Neptune-like planets observed (incl. planned)', value: '34', hours: '664' },
+            { label: 'Gas giant planets observed (incl. planned)', value: '63', hours: '1,259' }
+        ];
+
+        // Plots data
+        const plots = [
+            { name: 'Equilibrium Temperature Histogram', href: 'Teq_hist.png' },
+            { name: 'Planet Radius Histogram', href: 'radius_hist.png' },
+            { name: 'Planet Mass Histogram', href: 'mass_hist.png' },
+            { name: 'TSM for all observed planets', href: 'TSM_all.png' },
+            { name: 'TSM for small planets', href: 'TSM_smallplanet.png' },
+            { name: 'ESM for all observed planets', href: 'ESM_all.png' },
+            { name: 'ESM for small planets', href: 'ESM_smallplanet.png' }
+        ];
+
+        // Populate stats
+        const statsGrid = document.getElementById('statsGrid');
+        stats.forEach(stat => {
+            const statCard = document.createElement('div');
+            statCard.className = 'stat-card';
+            statCard.innerHTML = `
+                <div class="stat-label">${stat.label}</div>
+                <div class="stat-value">${stat.value}</div>
+                ${stat.hours ? `<div class="stat-hours">${stat.hours} hours of observation</div>` : ''}
+            `;
+            statsGrid.appendChild(statCard);
+        });
+
+        // Populate plots
+        const plotsGrid = document.getElementById('plotsGrid');
+        plots.forEach(plot => {
+            const plotLink = document.createElement('a');
+            plotLink.href = plot.href;
+            plotLink.className = 'plot-link';
+            plotLink.innerHTML = `
+                <span>${plot.name}</span>
+                <svg class="external-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+            `;
+            plotsGrid.appendChild(plotLink);
+        });
+    </script>
+    <div class="container-fluid">
+        <h2 class="mb-4">JWST Observation Table</h2>
+        
+        <div class="filter-section">
+            <div class="filter-group">
+                <h6>Category Filters</h6>
+                <div class="filter-row">
+                    <select id="eventFilter" class="form-select d-inline-block w-auto">
+                        <option value="">All Events</option>
+                    </select>
+                    <select id="modeFilter" class="form-select d-inline-block w-auto">
+                        <option value="">All Modes</option>
+                    </select>
+                    <select id="statusFilter" class="form-select d-inline-block w-auto">
+                        <option value="">All Statuses</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <h6>Numeric Filters</h6>
+                <button id="addNumericFilter" class="btn btn-primary btn-sm add-filter-btn">
+                    Add Numeric Filter
+                </button>
+                <div id="numericFilters">
+                    <!-- Numeric filters will be added here -->
+                </div>
+            </div>
+        </div>
+
+        <table id="observationsTable" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Target</th>
+                    <th>Exoplanet Archive Planet</th>
+                    <th>TSM</th>
+                    <th>ESM (5um)</th>
+                    <th>Mass (Mj)</th>
+                    <th>Mass (Me)</th>
+                    <th>Radius (Rj)</th>
+                    <th>Radius (Re)</th>
+                    <th>Teq</th>
+                    <th>Stellar SpT</th>
+                    <th>Vmag</th>
+                    <th>Event</th>
+                    <th>Mode</th>
+                    <th>Status</th>
+                    <th>Category </th>
+                    <th>Program </th>
+                    <th>PI name </th>
+
+                </tr>
+            </thead>
+            <tbody>

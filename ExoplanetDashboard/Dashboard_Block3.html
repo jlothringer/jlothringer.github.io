@@ -1,0 +1,152 @@
+           </tbody>
+        </table>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Define numeric columns and their indices
+            const numericColumns = {
+                'TSM' : 2,
+                'ESM' : 3,
+                'Mass (Mj)' : 4,
+                'Mass (Me)' : 5,
+                'Radius (Rj)' : 6,
+                'Radius (Re)' : 7,
+                'Teq' : 8,
+                'Vmag' : 9
+            };
+
+            // Initialize DataTable
+            var table = $('#observationsTable').DataTable({
+                pageLength: 10,
+                order: [[1, 'asc']],
+                dom: 'lBfrtip',
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                responsive: true
+            });
+
+            // Create a numeric filter row
+            function createNumericFilter() {
+                const filterHtml = `
+                    <div class="numeric-filter">
+                        <select class="form-select column-select">
+                            ${Object.keys(numericColumns).map(col => 
+                                `<option value="${numericColumns[col]}">${col}</option>`
+                            ).join('')}
+                        </select>
+                        <select class="form-select operator-select">
+                            <option value="=">=</option>
+                            <option value="<"><</option>
+                            <option value=">">></option>
+                            <option value="<=">≤</option>
+                            <option value=">=">≥</option>
+                            <option value="!=">≠</option>
+                        </select>
+                        <input type="number" class="form-control value-input" step="any" placeholder="Value">
+                        <i class="remove-filter bi bi-x-circle">✕</i>
+                    </div>
+                `;
+                $('#numericFilters').append(filterHtml);
+            }
+
+            // Add filter button handler
+            $('#addNumericFilter').on('click', createNumericFilter);
+
+            // Remove filter handler
+            $(document).on('click', '.remove-filter', function() {
+                $(this).closest('.numeric-filter').remove();
+                table.draw();
+            });
+
+            // Custom filtering function
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                let showRow = true;
+
+                // Process each numeric filter
+                $('.numeric-filter').each(function() {
+                    const column = $(this).find('.column-select').val();
+                    const operator = $(this).find('.operator-select').val();
+                    const value = parseFloat($(this).find('.value-input').val());
+                    const cellValue = parseFloat(data[column]);
+
+                    if (!isNaN(value) && !isNaN(cellValue)) {
+                        switch(operator) {
+                            case '=':
+                                showRow = showRow && (cellValue === value);
+                                break;
+                            case '<':
+                                showRow = showRow && (cellValue < value);
+                                break;
+                            case '>':
+                                showRow = showRow && (cellValue > value);
+                                break;
+                            case '<=':
+                                showRow = showRow && (cellValue <= value);
+                                break;
+                            case '>=':
+                                showRow = showRow && (cellValue >= value);
+                                break;
+                            case '!=':
+                                showRow = showRow && (cellValue !== value);
+                                break;
+                        }
+                    }
+                });
+
+                return showRow;
+            });
+
+            // Populate category filters
+            function populateFilter(columnIndex, selectId) {
+                var options = new Set();
+                table.column(columnIndex).data().each(function(value) {
+                    options.add(value);
+                });
+                var select = $(selectId);
+                options.forEach(function(value) {
+                    select.append($('<option></option>').val(value).text(value));
+                });
+            }
+
+            // Populate all category filters
+            populateFilter(11, '#eventFilter');
+            populateFilter(12, '#modeFilter');
+            populateFilter(13, '#statusFilter');
+
+            // Apply category filters
+            $('#eventFilter, #modeFilter, #statusFilter').on('change', function() {
+                var categoryVal = $('#eventFilter').val();
+                var modeVal = $('#modeFilter').val();
+                var statusVal = $('#statusFilter').val();
+
+                table.columns(11).search(categoryVal);
+                table.columns(12).search(modeVal);
+                table.columns(13).search(statusVal);
+                
+                table.draw();
+            });
+
+            // Apply numeric filters
+            $(document).on('change input', '.numeric-filter select, .numeric-filter input', function() {
+                table.draw();
+            });
+
+            // Style status cells
+            table.rows().every(function() {
+                var data = this.data();
+                var status = data[13];
+                if (status === 'Archived') {
+                    $(this.node()).find('td:eq(13)').addClass('status-archived');
+                } else if (status === 'Pending') {
+                    $(this.node()).find('td:eq(13)').addClass('status-pending');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

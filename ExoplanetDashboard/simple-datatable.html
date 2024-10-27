@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWST Observations</title>
+    
+    <!-- DataTables CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
+    
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <!-- DataTables -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #60A5FA;
+            margin-bottom: 2rem;
+        }
+        /* Dark theme for DataTables */
+        .dataTables_wrapper {
+            color: #e5e5e5;
+        }
+        table.dataTable {
+            background-color: #2d2d2d;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table.dataTable thead th {
+            background-color: #404040;
+            color: #ffffff;
+            border-bottom: 2px solid #505050;
+        }
+        table.dataTable tbody td {
+            background-color: #2d2d2d;
+            border-bottom: 1px solid #404040;
+        }
+        .dataTables_info, .dataTables_length, .dataTables_filter {
+            color: #e5e5e5 !important;
+        }
+        .dataTables_filter input, .dataTables_length select {
+            background-color: #404040 !important;
+            color: #ffffff !important;
+            border: 1px solid #505050 !important;
+            padding: 5px !important;
+        }
+        .dataTables_paginate .paginate_button {
+            background-color: #404040 !important;
+            color: #ffffff !important;
+            border: 1px solid #505050 !important;
+        }
+        .dataTables_paginate .paginate_button.current {
+            background-color: #60A5FA !important;
+            border: 1px solid #60A5FA !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JWST Observations Dashboard</h1>
+        <table id="observationsTable" class="display">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Program</th>
+                    <th>Target</th>
+                    <th>Event</th>
+                    <th>Mode</th>
+                    <th>Hours</th>
+                    <th>Status</th>
+                    <th>PI Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>COM</td>
+                    <td>1033</td>
+                    <td>L168-9</td>
+                    <td>Transit</td>
+                    <td>MIRI.LRS</td>
+                    <td>4.97</td>
+                    <td>Archived</td>
+                    <td>Kendrew</td>
+                </tr>
+                <tr>
+                    <td>COM</td>
+                    <td>1118</td>
+                    <td>HAT-P-14</td>
+                    <td>Transit</td>
+                    <td>NIRSPEC.BOTS+G395H</td>
+                    <td>6.83</td>
+                    <td>Archived</td>
+                    <td>Proffitt</td>
+                </tr>
+                <!-- Add more rows as needed -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#observationsTable').DataTable({
+                pageLength: 10,
+                order: [[0, 'asc']],
+                responsive: true,
+                language: {
+                    search: "Search observations:",
+                    lengthMenu: "Show _MENU_ observations per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ observations"
+                }
+            });
+        });
+    </script>
+</body>
+</html>

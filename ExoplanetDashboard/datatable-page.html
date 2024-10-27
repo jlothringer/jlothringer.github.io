@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observations Table</title>
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .filter-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .filter-section select, .filter-section input {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .filter-row {
+            margin-bottom: 10px;
+        }
+        .dataTables_wrapper {
+            margin-top: 20px;
+        }
+        table.dataTable thead th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .status-archived {
+            color: #198754;
+        }
+        .status-pending {
+            color: #dc3545;
+        }
+        .number-filter {
+            width: 150px !important;
+        }
+        .filter-label {
+            display: inline-block;
+            min-width: 100px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mb-4">Observations Data</h2>
+        
+        <div class="filter-section">
+            <h5>Filters</h5>
+            <div class="filter-row">
+                <span class="filter-label">Category:</span>
+                <select id="categoryFilter" class="form-select d-inline-block w-auto">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+            <div class="filter-row">
+                <span class="filter-label">Mode:</span>
+                <select id="modeFilter" class="form-select d-inline-block w-auto">
+                    <option value="">All Modes</option>
+                </select>
+            </div>
+            <div class="filter-row">
+                <span class="filter-label">Status:</span>
+                <select id="statusFilter" class="form-select d-inline-block w-auto">
+                    <option value="">All Statuses</option>
+                </select>
+            </div>
+            <div class="filter-row">
+                <span class="filter-label">Program ≥</span>
+                <input type="number" id="programMinFilter" class="form-control d-inline-block number-filter" placeholder="Min Program">
+            </div>
+        </div>
+
+        <table id="observationsTable" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Program</th>
+                    <th>Target</th>
+                    <th>Event</th>
+                    <th>Mode</th>
+                    <th>Hours</th>
+                    <th>Status</th>
+                    <th>PI Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>COM</td>
+                    <td>1033</td>
+                    <td>L168-9</td>
+                    <td>Transit</td>
+                    <td>MIRI.LRS</td>
+                    <td>4.97</td>
+                    <td>Archived</td>
+                    <td>Kendrew</td>
+                </tr>
+                <tr>
+                    <td>GTO</td>
+                    <td>1045</td>
+                    <td>HD 209458</td>
+                    <td>Eclipse</td>
+                    <td>NIRSpec.IFU</td>
+                    <td>6.23</td>
+                    <td>Pending</td>
+                    <td>Smith</td>
+                </tr>
+                <tr>
+                    <td>DDT</td>
+                    <td>1089</td>
+                    <td>WASP-39</td>
+                    <td>Transit</td>
+                    <td>MIRI.LRS</td>
+                    <td>3.85</td>
+                    <td>Archived</td>
+                    <td>Johnson</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Custom filtering function for Program numbers
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                var minProgram = parseInt($('#programMinFilter').val(), 10);
+                var programNumber = parseInt(data[1], 10); // Program is in column index 1
+
+                if (isNaN(minProgram)) {
+                    return true;
+                }
+                
+                return programNumber >= minProgram;
+            });
+
+            // Initialize DataTable
+            var table = $('#observationsTable').DataTable({
+                pageLength: 10,
+                order: [[1, 'asc']], // Sort by Program column by default
+                dom: 'lBfrtip',
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                responsive: true
+            });
+
+            // Populate filter dropdowns
+            function populateFilter(columnIndex, selectId) {
+                var options = new Set();
+                table.column(columnIndex).data().each(function(value) {
+                    options.add(value);
+                });
+                var select = $(selectId);
+                options.forEach(function(value) {
+                    select.append($('<option></option>').val(value).text(value));
+                });
+            }
+
+            // Populate all filters
+            populateFilter(0, '#categoryFilter'); // Category
+            populateFilter(4, '#modeFilter');     // Mode
+            populateFilter(6, '#statusFilter');   // Status
+
+            // Apply category/mode/status filters
+            $('#categoryFilter, #modeFilter, #statusFilter').on('change', function() {
+                var categoryVal = $('#categoryFilter').val();
+                var modeVal = $('#modeFilter').val();
+                var statusVal = $('#statusFilter').val();
+
+                table.columns(0).search(categoryVal);
+                table.columns(4).search(modeVal);
+                table.columns(6).search(statusVal);
+                
+                table.draw();
+            });
+
+            // Apply program number filter
+            $('#programMinFilter').on('input', function() {
+                table.draw();
+            });
+
+            // Style status cells
+            table.rows().every(function() {
+                var data = this.data();
+                var status = data[6];
+                if (status === 'Archived') {
+                    $(this.node()).find('td:eq(6)').addClass('status-archived');
+                } else if (status === 'Pending') {
+                    $(this.node()).find('td:eq(6)').addClass('status-pending');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

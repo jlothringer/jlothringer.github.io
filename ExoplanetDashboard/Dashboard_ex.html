@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observations Table</title>
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .filter-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .filter-section select, .filter-section input {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .filter-row {
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .dataTables_wrapper {
+            margin-top: 20px;
+        }
+        table.dataTable thead th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .status-archived {
+            color: #198754;
+        }
+        .status-pending {
+            color: #dc3545;
+        }
+        .numeric-filter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .numeric-filter select, .numeric-filter input {
+            flex: 1;
+        }
+        .filter-group {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .filter-group h6 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+        .add-filter-btn {
+            margin-bottom: 15px;
+        }
+        .remove-filter {
+            cursor: pointer;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mb-4">Observations Data</h2>
+        
+        <div class="filter-section">
+            <div class="filter-group">
+                <h6>Category Filters</h6>
+                <div class="filter-row">
+                    <select id="eventFilter" class="form-select d-inline-block w-auto">
+                        <option value="">All Events</option>
+                    </select>
+                    <select id="modeFilter" class="form-select d-inline-block w-auto">
+                        <option value="">All Modes</option>
+                    </select>
+                    <select id="statusFilter" class="form-select d-inline-block w-auto">
+                        <option value="">All Statuses</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <h6>Numeric Filters</h6>
+                <button id="addNumericFilter" class="btn btn-primary btn-sm add-filter-btn">
+                    Add Numeric Filter
+                </button>
+                <div id="numericFilters">
+                    <!-- Numeric filters will be added here -->
+                </div>
+            </div>
+        </div>
+
+        <table id="observationsTable" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Target</th>
+                    <th>Exoplanet Archive Planet</th>
+                    <th>Mass (Mj)</th>
+                    <th>Mass (Me)</th>
+                    <th>Radius (Rj)</th>
+                    <th>Radius (Re)</th>
+                    <th>Teq</th>
+                    <th>Stellar SpT</th>
+                    <th>Vmag</th>
+                    <th>Event</th>
+                    <th>Mode</th>
+                    <th>Status</th>
+                    <th>Category </th>
+                    <th>Program </th>
+                    <th>PI name </th>
+
+                </tr>
+            </thead>
+            <tbody><tr>
+<td> L168-9 </td>
+<td> L 168-9 b </td>
+<td> 0.01281 </td>
+<td> 4.07 </td>
+<td> 0.145 </td>
+<td> 1.63 </td>
+<td> 998.0 </td>
+<td> M0.5 V </td>
+<td> 11.005 </td>
+<td> Transit </td>
+<td> MIRI.LRS </td>
+<td> Archived </td>
+<td> COM </td>
+<td> 1033 </td>
+<td> Kendrew </td>
+</tr>
+<tr>
+<td> HAT-P-14 </td>
+<td> HAT-P-14 b </td>
+<td> 3.44 </td>
+<td> 1093.3352 </td>
+<td> 1.42 </td>
+<td> 15.917 </td>
+<td> 1624.0 </td>
+<td> F5 V </td>
+<td> 9.988 </td>
+<td> Transit </td>
+<td> NIRSPEC.BOTS+G395H </td>
+<td> Archived </td>
+<td> COM </td>
+<td> 1118 </td>
+<td> Proffitt </td>
+</tr>
+           </tbody>
+        </table>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Define numeric columns and their indices
+            const numericColumns = {
+                'Mass (Mj)': 2,
+                'Mass (Me)': 3
+            };
+
+            // Initialize DataTable
+            var table = $('#observationsTable').DataTable({
+                pageLength: 10,
+                order: [[1, 'asc']],
+                dom: 'lBfrtip',
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                responsive: true
+            });
+
+            // Create a numeric filter row
+            function createNumericFilter() {
+                const filterHtml = `
+                    <div class="numeric-filter">
+                        <select class="form-select column-select">
+                            ${Object.keys(numericColumns).map(col => 
+                                `<option value="${numericColumns[col]}">${col}</option>`
+                            ).join('')}
+                        </select>
+                        <select class="form-select operator-select">
+                            <option value="=">=</option>
+                            <option value="<"><</option>
+                            <option value=">">></option>
+                            <option value="<=">≤</option>
+                            <option value=">=">≥</option>
+                            <option value="!=">≠</option>
+                        </select>
+                        <input type="number" class="form-control value-input" step="any" placeholder="Value">
+                        <i class="remove-filter bi bi-x-circle">✕</i>
+                    </div>
+                `;
+                $('#numericFilters').append(filterHtml);
+            }
+
+            // Add filter button handler
+            $('#addNumericFilter').on('click', createNumericFilter);
+
+            // Remove filter handler
+            $(document).on('click', '.remove-filter', function() {
+                $(this).closest('.numeric-filter').remove();
+                table.draw();
+            });
+
+            // Custom filtering function
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                let showRow = true;
+
+                // Process each numeric filter
+                $('.numeric-filter').each(function() {
+                    const column = $(this).find('.column-select').val();
+                    const operator = $(this).find('.operator-select').val();
+                    const value = parseFloat($(this).find('.value-input').val());
+                    const cellValue = parseFloat(data[column]);
+
+                    if (!isNaN(value) && !isNaN(cellValue)) {
+                        switch(operator) {
+                            case '=':
+                                showRow = showRow && (cellValue === value);
+                                break;
+                            case '<':
+                                showRow = showRow && (cellValue < value);
+                                break;
+                            case '>':
+                                showRow = showRow && (cellValue > value);
+                                break;
+                            case '<=':
+                                showRow = showRow && (cellValue <= value);
+                                break;
+                            case '>=':
+                                showRow = showRow && (cellValue >= value);
+                                break;
+                            case '!=':
+                                showRow = showRow && (cellValue !== value);
+                                break;
+                        }
+                    }
+                });
+
+                return showRow;
+            });
+
+            // Populate category filters
+            function populateFilter(columnIndex, selectId) {
+                var options = new Set();
+                table.column(columnIndex).data().each(function(value) {
+                    options.add(value);
+                });
+                var select = $(selectId);
+                options.forEach(function(value) {
+                    select.append($('<option></option>').val(value).text(value));
+                });
+            }
+
+            // Populate all category filters
+            populateFilter(9, '#eventFilter');
+            populateFilter(10, '#modeFilter');
+            populateFilter(11, '#statusFilter');
+
+            // Apply category filters
+            $('#eventFilter, #modeFilter, #statusFilter').on('change', function() {
+                var categoryVal = $('#eventFilter').val();
+                var modeVal = $('#modeFilter').val();
+                var statusVal = $('#statusFilter').val();
+
+                table.columns(9).search(categoryVal);
+                table.columns(10).search(modeVal);
+                table.columns(11).search(statusVal);
+                
+                table.draw();
+            });
+
+            // Apply numeric filters
+            $(document).on('change input', '.numeric-filter select, .numeric-filter input', function() {
+                table.draw();
+            });
+
+            // Style status cells
+            table.rows().every(function() {
+                var data = this.data();
+                var status = data[6];
+                if (status === 'Archived') {
+                    $(this.node()).find('td:eq(6)').addClass('status-archived');
+                } else if (status === 'Pending') {
+                    $(this.node()).find('td:eq(6)').addClass('status-pending');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

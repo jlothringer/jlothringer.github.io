@@ -1,0 +1,59 @@
+`.trim().split('\n');
+
+updateStatsDisplay(statsValues);
+</script>
+
+<div class="container-fluid">
+<h2 class="mb-4">JWST Observation Table</h2>
+
+<div class="filter-section">
+  <div class="filter-group">
+      <h6>Category Filters</h6>
+      <div class="filter-row">
+          <select id="eventFilter" class="form-select d-inline-block w-auto">
+              <option value="">All Events</option>
+          </select>
+          <select id="modeFilter" class="form-select d-inline-block w-auto">
+              <option value="">All Modes</option>
+          </select>
+          <select id="statusFilter" class="form-select d-inline-block w-auto">
+              <option value="">All Statuses</option>
+          </select>
+      </div>
+  </div>
+
+  <div class="filter-group">
+      <h6>Numeric Filters</h6>
+      <button id="addNumericFilter" class="btn btn-primary btn-sm add-filter-btn">
+          Add Numeric Filter
+      </button>
+      <div id="numericFilters">
+          <!-- Numeric filters will be added here -->
+      </div>
+  </div>
+</div>
+
+<table id="observationsTable" class="table table-striped table-bordered">
+  <thead>
+      <tr>
+          <th>Target</th>
+          <th>Exoplanet Archive Planet</th>
+          <th>TSM</th>
+          <th>ESM (5um)</th>
+          <th>Mass (Mj)</th>
+          <th>Mass (Me)</th>
+          <th>Radius (Rj)</th>
+          <th>Radius (Re)</th>
+          <th>Teq</th>
+          <th>Stellar SpT</th>
+          <th>Vmag</th>
+          <th>Event</th>
+          <th>Mode</th>
+          <th>Status</th>
+          <th>Category </th>
+          <th>Program </th>
+          <th>PI name </th>
+
+      </tr>
+  </thead>
+  <tbody>
