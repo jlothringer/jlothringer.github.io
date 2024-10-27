@@ -115,10 +115,12 @@ out.append([len(unique(linked_data_dirty[archived]))])
 out.append([round(np.sum(data['Hours'][archived]))])
 out.append([uniq_planet - len(unique(linked_data_dirty[archived]))])
 out.append([len(unique(linked_data[SEs]))])
-out.append([round(np.sum(data['Hours'][list(set(SEs) & set(archived))]))])
 out.append([len(unique(linked_data[Neps]))])
-out.append([round(np.sum(data['Hours'][list(set(Neps) & set(archived))]))])
 out.append([len(unique(linked_data[HJs]))])
+out.append([round(np.sum(data['Hours'][list(set(SEs) & set(archived))]))])
+
+out.append([round(np.sum(data['Hours'][list(set(Neps) & set(archived))]))])
+
 out.append([round(np.sum(data['Hours'][list(set(HJs) & set(archived))]))])
 
 with open('Dashboard_Block05.txt', 'w', newline='') as mycsvfile:

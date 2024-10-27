@@ -15,5 +15,5 @@ rm tmp.txt
 rm tmp2.txt
 rm tmp3.txt
 
-git commit -a -m "update"
-git push origin main
+#git commit -a -m "update"
+#git push origin main
