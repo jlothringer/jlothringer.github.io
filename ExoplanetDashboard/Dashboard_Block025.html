@@ -295,65 +295,58 @@ ga('send', 'pageview');
             <h2>Additional Plots</h2>
             <div class="plots-grid" id="plotsGrid"></div>
           </section>
-          <script>
-          // Static labels for the stats
-          const statLabels = [
-            { label: 'Planets observed' },
-            { label: 'Total hours observed' },
-            { label: 'Additional planets planned' },
-            { label: 'Rocky planets observed (incl. planned)', hasHours: true },
-            { label: 'Neptune-like planets observed (incl. planned)', hasHours: true },
-            { label: 'Gas giant planets observed (incl. planned)', hasHours: true }
-          ];
-          
-          // Plots data
-          const plots = [
-            { name: 'Equilibrium Temperature Histogram', href: 'Teq_hist.png' },
-            { name: 'Planet Radius Histogram', href: 'radius_hist.png' },
-            { name: 'Planet Mass Histogram', href: 'mass_hist.png' },
-            { name: 'TSM for all observed planets', href: 'TSM_all.png' },
-            { name: 'TSM for small planets', href: 'TSM_smallplanet.png' },
-            { name: 'ESM for all observed planets', href: 'ESM_all.png' },
-            { name: 'ESM for small planets', href: 'ESM_smallplanet.png' }
-          ];
-          
-          // Function to update stats display
-          function updateStatsDisplay(values) {
-            const statsGrid = document.getElementById('statsGrid');
-            statsGrid.innerHTML = ''; // Clear existing content
-            
-            statLabels.forEach((stat, index) => {
-              const value = values[index];
-              const hoursValue = stat.hasHours ? values[index + 6] : null;
-              const statCard = document.createElement('div');
-              statCard.className = 'stat-card';
-              statCard.innerHTML = `
+    <script>
+    const statLabels = [
+        { label: 'Planets observed' },
+        { label: 'Total hours observed' },
+        { label: 'Additional planets planned' },
+        { label: 'Rocky planets observed (incl. planned)', hoursIndex: 6 },
+        { label: 'Neptune-like planets observed (incl. planned)', hoursIndex: 7 },
+        { label: 'Gas giant planets observed (incl. planned)', hoursIndex: 8 }
+    ];
+
+    const plots = [
+        { name: 'Equilibrium Temperature Histogram', href: 'Teq_hist.png' },
+        { name: 'Planet Radius Histogram', href: 'radius_hist.png' },
+        { name: 'Planet Mass Histogram', href: 'mass_hist.png' },
+        { name: 'TSM for all observed planets', href: 'TSM_all.png' },
+        { name: 'TSM for small planets', href: 'TSM_smallplanet.png' },
+        { name: 'ESM for all observed planets', href: 'ESM_all.png' },
+        { name: 'ESM for small planets', href: 'ESM_smallplanet.png' }
+    ];
+
+    function updateStatsDisplay(values) {
+        const statsGrid = document.getElementById('statsGrid');
+        statsGrid.innerHTML = '';
+        
+        statLabels.forEach((stat, index) => {
+            const value = values[index];
+            const hoursValue = stat.hoursIndex !== undefined ? values[stat.hoursIndex] : null;
+            const statCard = document.createElement('div');
+            statCard.className = 'stat-card';
+            statCard.innerHTML = `
                 <div class="stat-label">${stat.label}</div>
                 <div class="stat-value">${value}</div>
                 ${hoursValue ? `<div class="stat-hours">${hoursValue} hours of observation</div>` : ''}
-              `;
-              statsGrid.appendChild(statCard);
-            });
-          }
-          
-          // Populate plots
-          const plotsGrid = document.getElementById('plotsGrid');
-          plots.forEach(plot => {
-            const plotLink = document.createElement('a');
-            plotLink.href = plot.href;
-            plotLink.className = 'plot-link';
-            plotLink.innerHTML = `
-              <span>${plot.name}</span>
-              <svg class="external-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            `;
+            statsGrid.appendChild(statCard);
+        });
+    }
+
+    const plotsGrid = document.getElementById('plotsGrid');
+    plots.forEach(plot => {
+        const plotLink = document.createElement('a');
+        plotLink.href = plot.href;
+        plotLink.className = 'plot-link';
+        plotLink.innerHTML = `
+            <span>${plot.name}</span>
+            <svg class="external-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                 <polyline points="15 3 21 3 21 9"></polyline>
                 <line x1="10" y1="14" x2="21" y2="3"></line>
-              </svg>
-            `;
-            plotsGrid.appendChild(plotLink);
-          });
-          
-          // Read the contents from stats.txt
-          // You'll want to put the actual contents of your stats.txt file here:
-          const statsValues = `
-          
+            </svg>
+        `;
+        plotsGrid.appendChild(plotLink);
+    });
+
+    const statsValues = `

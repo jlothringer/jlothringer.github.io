@@ -82,6 +82,15 @@ for i in range(len(data)):
         esm.append(0.0)
         esm5.append(0.0)
         linked_data[i] = nan
+        
+#clean TSMs
+tsm = np.asarray(tsm)
+esm = np.asarray(esm)
+esm5 = np.asarray(esm5)
+tsm[np.where(np.isnan(tsm))[0]] = -1.0
+esm[np.where(np.isnan(esm))[0]] = -1.0
+esm5[np.where(np.isnan(esm5))[0]] = -1.0
+
     
 linked_data_dirty = np.array(linked_data)
 linked_data = linked_data_dirty[~np.isnan(linked_data_dirty)]
@@ -297,6 +306,7 @@ out = []
 for i in range(len(data)):
     out.append(['<tr>'])
     out.append(['<td> '+str(data['Target'][i])+' </td>'])
+        
     try:
         out.append(['<td> '+str(planets.iloc[int(linked_data_dirty[i])]['pl_name'])+' </td>'])
         
@@ -313,7 +323,10 @@ for i in range(len(data)):
         out.append(['<td> '+str(planets.iloc[int(linked_data_dirty[i])]['st_spectype'])+' </td>'])
         out.append(['<td> '+str(planets.iloc[int(linked_data_dirty[i])]['sy_vmag'])+' </td>'])
     except:
-        out.append(['<td> - </td>'])
+        if data['Target'][i] == 'GJ-341':
+            out.append(['<td> Not in confirmed planets </td>'])
+        else:
+            out.append(['<td> - </td>'])
         out.append(['<td> - </td>'])
         out.append(['<td> - </td>'])
         out.append(['<td> - </td>'])
