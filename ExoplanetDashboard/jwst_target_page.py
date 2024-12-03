@@ -155,7 +155,7 @@ plt.ylabel('# of planets observed',fontsize=15)
 plt.tick_params(labelsize=14)
 plt.tight_layout()
 
-savefig('Teq_hist.png')
+savefig('Teq_hist.png',dpi=200)
 
 
 #Mass histogram
@@ -178,7 +178,7 @@ plt.ylabel('# of planets observed',fontsize=15)
 plt.tick_params(labelsize=14)
 plt.tight_layout()
 
-savefig('mass_hist.png')
+savefig('mass_hist.png',dpi=200)
 
 
 #Radius histogram
@@ -200,7 +200,7 @@ plt.tick_params(labelsize=14)
 plt.xlim(0,23)
 plt.tight_layout()
 
-savefig('radius_hist.png')
+savefig('radius_hist.png',dpi=200)
 
 
 #Planet population
@@ -243,7 +243,7 @@ plt.ylabel('Transit Spectroscopy Metric',fontsize=15)
 plt.tick_params(labelsize=14)
 plt.tight_layout()
 
-savefig('TSM_all.png')
+savefig('TSM_all.png',dpi=200)
 
 #TSM planets vs mass
 #small
@@ -262,7 +262,7 @@ plt.ylabel('Transit Spectroscopy Metric',fontsize=15)
 plt.tick_params(labelsize=14)
 plt.tight_layout()
 
-savefig('TSM_smallplanet.png')
+savefig('TSM_smallplanet.png',dpi=200)
 
 #ESM planets vs. mass
 
@@ -280,7 +280,7 @@ plt.ylabel(r'Emission Spectroscopy Metric (1.5$\mu$m)',fontsize=15)
 plt.tick_params(labelsize=14)
 plt.tight_layout()
 
-savefig('ESM_all.png')
+savefig('ESM_all.png',dpi=200)
 
 #ESM small planets
 
@@ -299,7 +299,7 @@ plt.ylabel(r'Emission Spectroscopy Metric (1.5$\mu$m)',fontsize=15)
 plt.tick_params(labelsize=14)
 plt.tight_layout()
 
-savefig('ESM_smallplanet.png')
+savefig('ESM_smallplanet.png',dpi=200)
 
 #output html
 out = []
