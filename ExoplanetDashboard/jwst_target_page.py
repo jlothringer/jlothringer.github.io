@@ -357,3 +357,27 @@ with open('Dashboard_Block2.html', 'w', newline='') as mycsvfile:
     writer = csv.writer(mycsvfile, quoting=csv.QUOTE_NONE)
     writer.writerows(out)
 #b.close()
+
+#output csv
+out = []
+out.append(['Target','Planet Name','TSM','ESM (5um)','Mass (M_J)','Mass (M_E)','Radius (R_J)','Radius (R_E)','T_eq','Star SpT','Star Vmag','Event','Mode','Status','Category','Program','PI Name'])
+for i in range(len(data)):
+    try:
+        tmp = [data['Target'][i],planets.iloc[int(linked_data_dirty[i])]['pl_name'],tsm[i],esm5[i],
+               planets.iloc[int(linked_data_dirty[i])]['pl_bmassj'],planets.iloc[int(linked_data_dirty[i])]['pl_bmasse'],
+               planets.iloc[int(linked_data_dirty[i])]['pl_radj'],planets.iloc[int(linked_data_dirty[i])]['pl_rade'],
+               planets.iloc[int(linked_data_dirty[i])]['pl_eqt'],planets.iloc[int(linked_data_dirty[i])]['st_spectype'],
+               planets.iloc[int(linked_data_dirty[i])]['sy_vmag'],data['Event'][i],data['Mode'][i],data['Status'][i],
+               data['Category'][i],data['Program'][i],data['PI name'][i]]
+    except:
+        tmp = [data['Target'][i],'-','-','-',
+               '-','-',
+               '-','-',
+               '-','-',
+               '-',data['Event'][i],data['Mode'][i],data['Status'][i],
+               data['Category'][i],data['Program'][i],data['PI name'][i]]
+    out.append(tmp)
+        
+with open('JWST_ExoDashboard_Table.csv', 'w') as mycsvfile:
+    writer = csv.writer(mycsvfile)
+    writer.writerows(out)
