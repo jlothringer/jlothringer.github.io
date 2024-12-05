@@ -381,3 +381,33 @@ for i in range(len(data)):
 with open('JWST_ExoDashboard_Table.csv', 'w') as mycsvfile:
     writer = csv.writer(mycsvfile)
     writer.writerows(out)
+    
+
+#output full mega table
+#all planet properties for each observation
+out = []
+out.append(['Target','Planet Name','TSM','ESM (5um)','Mass (M_J)','Mass (M_E)','Radius (R_J)','Radius (R_E)','T_eq','Star SpT','Star Vmag','Event','Mode','Status','Category','Program','PI Name'])
+out = list(data.keys())
+out.extend(planets.keys())
+out = [out]
+
+for i in range(len(data)):
+    try:
+        tmp = [data[key][i] for key in data.keys()]
+        
+        tmp2 = [planets.iloc[int(linked_data_dirty[i])][key] for key in planets.keys()]
+        
+        tmp.extend(tmp2)
+        
+    except:
+        tmp = [data[key][i] for key in data.keys()]
+        
+        tmp2 = ['-' for key in planets.keys()]
+        
+        tmp.extend(tmp2)
+
+    out.append(tmp)
+        
+with open('JWST_ExoDashboard_Table_Full.csv', 'w') as mycsvfile:
+    writer = csv.writer(mycsvfile)
+    writer.writerows(out)
