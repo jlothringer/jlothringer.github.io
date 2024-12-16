@@ -10,6 +10,8 @@ cat tmp3.txt Dashboard_Block3.html > Dashboard.html
 
 cp Dashboard.html ../
 cp *png ../
+cp *gif ../
+cp JWST_ExoDashboard_Table*csv ../
 
 rm tmp.txt
 rm tmp2.txt
