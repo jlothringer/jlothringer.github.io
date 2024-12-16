@@ -463,6 +463,7 @@ plt.legend(fontsize=14,loc='lower right')
 
 # Animation update function
 #['#0072B2', '#009E73', '#D55E00', '#CC79A7', '#F0E442', '#56B4E9']
+num = 1
 def update(frame):
     # Extract current row
     print(frame)
@@ -472,6 +473,9 @@ def update(frame):
             ax.plot(planets.iloc[int(new.ldd[archived_new[frame]])]['pl_orbper'],
                     planets.iloc[int(new.ldd[archived_new[frame]])]['pl_bmassj'],
                     'H', markersize=10, markeredgecolor='black',color='gold')
+            ax.text(planets.iloc[int(new.ldd[archived_new[frame]])]['pl_orbper'],
+                    planets.iloc[int(new.ldd[archived_new[frame]])]['pl_bmassj'],
+                    planets.iloc[int(new.ldd[archived_new[frame]])]['pl_name'], fontsize=12)
             ax.set_title(new['Start date'].iloc[archived_new[frame]], fontsize=13)
         if frame > 0:
             if ~np.isnan(new.ldd[archived_new[frame-1]]):
@@ -479,7 +483,21 @@ def update(frame):
                     ax.plot(planets.iloc[int(new.ldd[archived_new[frame-1]])]['pl_orbper'],
                             planets.iloc[int(new.ldd[archived_new[frame-1]])]['pl_bmassj'],
                             'H', markersize=10, markeredgecolor='black',color=r'#0072B2')
+                #ax.texts[-2].remove() #not -1 b/c there is an initial one with the title
+    if ((frame > 0) and (frame) < len(archived_new)):
+        if ~np.isnan(new.ldd[archived_new[frame-1]]):
+            try:
+                ax.texts[-2].remove()
+            except IndexError:
+                print('Text remove failed')
+                try:
+                    ax.texts[0].remove()
+                except IndexError:
+                    print('Text remove still failed')
+        if frame == 3:
+            ax.texts[0].remove()
     if frame == len(archived_new)+8:
+        ax.texts[0].remove()
         ax.plot(planets.iloc[int(new.ldd[archived_new[len(archived_new)-9]])]['pl_orbper'],
                 planets.iloc[int(new.ldd[archived_new[len(archived_new)-9]])]['pl_bmassj'],
                 'H', markersize=10, markeredgecolor='black',color=r'#0072B2')
