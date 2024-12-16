@@ -440,7 +440,7 @@ ax.set_xlim(1e-1, 1e5)
 ax.set_xlabel('Orbital Period (days)', fontsize=15)
 ax.set_ylabel('Planet Mass (Jupiter Masses)', fontsize=15)
 ax.tick_params(labelsize=14)
-plt.suptitle('JWST Observations', fontsize=16)
+plt.suptitle('JWST Exoplanet Observations', fontsize=16)
 ax.set_title('2021-12-25 12:20:00', fontsize=16)
 ax.grid(True, which="both", linestyle='--', linewidth=0.5)
 
@@ -451,7 +451,7 @@ ax.plot(
     '.',
     color='grey',
     label='All Exoplanets',
-    alpha=0.35
+    alpha=0.35, zorder=-2
 )
 
 ax.plot([], [], 'H', markersize=10, markeredgecolor='black', label='Observed with JWST',color=r'#0072B2')
@@ -490,7 +490,7 @@ def update(frame):
     return 
 
 print('MAKING GIF')
-ani = FuncAnimation(fig, update, frames=len(archived_new)+50, interval=175, blit=False)
+ani = FuncAnimation(fig, update, frames=len(archived_new)+25, interval=175, blit=False)
 
 ani.save('jwst_planets.gif', dpi=150, writer='pillow')
 
