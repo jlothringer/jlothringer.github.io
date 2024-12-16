@@ -155,7 +155,7 @@ plt.minorticks_on()
 plt.legend(labels=['Super-Earths','Neptunes','Gas Giants'],fontsize=12)
 
 plt.xlabel('Equilibrium Temperature (K)',fontsize=15)
-plt.ylabel('# of planets observed',fontsize=15)
+plt.ylabel('\# of planets observed',fontsize=15)
 plt.tick_params(labelsize=14)
 plt.tight_layout()
 
@@ -178,7 +178,7 @@ plt.minorticks_on()
 plt.legend(labels=['Super-Earths','Neptunes','Gas Giants'],fontsize=12)
 
 plt.xlabel('Earth Masses',fontsize=15)
-plt.ylabel('# of planets observed',fontsize=15)
+plt.ylabel('\# of planets observed',fontsize=15)
 plt.tick_params(labelsize=14)
 plt.tight_layout()
 
@@ -199,7 +199,7 @@ plt.minorticks_on()
 plt.legend(labels=['Super-Earths','Neptunes','Gas Giants'],fontsize=12)
 
 plt.xlabel('Earth Radii',fontsize=15)
-plt.ylabel('# of planets observed',fontsize=15)
+plt.ylabel('\# of planets observed',fontsize=15)
 plt.tick_params(labelsize=14)
 plt.xlim(0,23)
 plt.tight_layout()
