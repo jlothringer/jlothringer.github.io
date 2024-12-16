@@ -254,7 +254,7 @@ ga('send', 'pageview');
             <p>
                 This page combines 
                 <a href="https://www.stsci.edu/~nnikolov/TrExoLiSTS/JWST/trexolists.html" class="external-link">
-                    Trexolist
+                    TrExoLiSTS
                     <svg class="external-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                         <polyline points="15 3 21 3 21 9"></polyline>
@@ -281,6 +281,9 @@ ga('send', 'pageview');
                 </a>
                 to understand what <i>kinds</i> of planets JWST has observed.
             </p>
+	    <p>
+	      The nearest exoplanet system in the NASA Exoplanet Archive to each JWST observation in TrExoLiSTS is identified. For multi-planet systems, the planet being observed is identified by finding the planet whose transit duration is closest to approximately half of the observing time.
+	      </p>
         </header>
 
         <section class="card">
@@ -288,8 +291,8 @@ ga('send', 'pageview');
             <div class="stats-grid" id="statsGrid"></div>
           </section>
           <section class="card">
-            <h2>Population Distribution</h2>
-            <img src="population.png" alt="Population of exoplanets, observed and planned with JWST" class="main-plot">
+            <h2>Observed Planets Over Time</h2>
+            <img src="jwst_planets.gif" alt="Population of exoplanets, observed and planned with JWST" class="main-plot">
           </section>
           <section class="card">
             <h2>Additional Plots</h2>
@@ -305,7 +308,8 @@ ga('send', 'pageview');
         { label: 'Gas giant planets observed (incl. planned)', hoursIndex: 8 }
     ];
 
-    const plots = [
+      const plots = [
+	{ name: 'Period vs. Mass', href: 'population.png' },
         { name: 'Equilibrium Temperature Histogram', href: 'Teq_hist.png' },
         { name: 'Planet Radius Histogram', href: 'radius_hist.png' },
         { name: 'Planet Mass Histogram', href: 'mass_hist.png' },

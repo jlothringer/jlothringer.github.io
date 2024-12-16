@@ -14,7 +14,9 @@ from matplotlib.pyplot import *
 import csv
 from datetime import datetime
 
-cs = ['#1f77b4', '#ff7f0e', '#d62728','#2ca02c', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+#cs = ['#1f77b4', '#ff7f0e', '#d62728','#2ca02c', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+
+plt.style.use('seaborn-v0_8-colorblind')
 
 def ra_to_deg(hours,minutes,seconds):
     #return 360*hours/24+minutes/60+seconds/60/60
@@ -26,7 +28,8 @@ def dec_to_deg(degrees,minutes,seconds):
 data = pd.read_csv('trexolists_jwst.csv')
 
 archived = np.where(data['Status'] == 'Archived')[0]
-planned = np.where(data['Status'] != 'Archived')[0]
+#planned = np.where(data['Status'] != 'Archived')[0]
+planned = np.where((data['Status'] == 'FlightReady') | (data['Status'] == 'Implementation'))[0]
 
 transits = np.where(data['Event'] == 'Transit')[0]
 eclipses = np.where(data['Event'] == 'Eclipse')[0]
@@ -202,14 +205,14 @@ plt.tight_layout()
 
 savefig('radius_hist.png',dpi=200)
 
-
 #Planet population
 figure(figsize=(9,6))
-plot(planets['pl_orbper'],planets['pl_bmassj'],'.',color='k',label='All Exoplanets \n(with measured mass)')
 
-plot(planets.iloc[unique(linked_data_dirty[archived])]['pl_orbper'],planets.iloc[unique(linked_data_dirty[archived])]['pl_bmassj'],'o',color='dodgerblue',label='Observed with JWST')
+plot(planets['pl_orbper'],planets['pl_bmassj'],'.',color='grey',label='All Exoplanets \n(with measured mass)',alpha=0.35)
 
-plot(planets.iloc[unique(linked_data_dirty[planned])]['pl_orbper'],planets.iloc[unique(linked_data_dirty[planned])]['pl_bmassj'],'o',color='orange',label='Planned with JWST')
+plot(planets.iloc[unique(linked_data_dirty[archived])]['pl_orbper'],planets.iloc[unique(linked_data_dirty[archived])]['pl_bmassj'],'H',label='Observed with JWST',markersize=10,markeredgecolor= "black",zorder=999)
+
+plot(planets.iloc[unique(linked_data_dirty[planned])]['pl_orbper'],planets.iloc[unique(linked_data_dirty[planned])]['pl_bmassj'],'H',label='Planned with JWST',markersize=10,markeredgecolor= "black",zorder=998)
 
 
 plt.yscale('log')
@@ -231,8 +234,8 @@ savefig('population.png',dpi=200)
 
 plt.figure()
 
-plt.plot(eaot['Mp'],eaot['SNR_Transmission_K_mag'],'k.',label='All Exoplanets \n(with measured mass)')
-plt.plot(planets.iloc[linked_data_dirty[transits]]['pl_bmassj'],np.asarray(tsm)[transits],'o',color='dodgerblue',label='Observed with JWST')
+plt.plot(eaot['Mp'],eaot['SNR_Transmission_K_mag'],'.',color='grey',label='All Exoplanets \n(with measured mass)')
+plt.plot(planets.iloc[linked_data_dirty[transits]]['pl_bmassj'],np.asarray(tsm)[transits],'s',label='Observed with JWST')
 
 plt.xscale('log')
 plt.yscale('log')
@@ -249,8 +252,8 @@ savefig('TSM_all.png',dpi=200)
 #small
 plt.figure()
 
-plt.plot(eaot['Mp']*317.8,eaot['SNR_Transmission_K_mag'],'k.',label='All Exoplanets \n(with measured mass)')
-plt.plot(planets.iloc[linked_data_dirty[transits]]['pl_bmasse'],np.asarray(tsm)[transits],'o',color='dodgerblue',label='Observed with JWST')
+plt.plot(eaot['Mp']*317.8,eaot['SNR_Transmission_K_mag'],'.',label='All Exoplanets \n(with measured mass)',color='grey')
+plt.plot(planets.iloc[linked_data_dirty[transits]]['pl_bmasse'],np.asarray(tsm)[transits],'s',label='Observed with JWST')
 
 #plt.xscale('log')
 plt.yscale('log')
@@ -268,8 +271,8 @@ savefig('TSM_smallplanet.png',dpi=200)
 
 plt.figure()
 
-plt.plot(eaot['Mp'],eaot['SNR_Emission_15_micron'],'k.',label='All Exoplanets \n(with measured mass)')
-plt.plot(planets.iloc[linked_data_dirty[transits]]['pl_bmassj'],np.asarray(esm)[transits],'o',color='dodgerblue',label='Observed with JWST')
+plt.plot(eaot['Mp'],eaot['SNR_Emission_15_micron'],'.',label='All Exoplanets \n(with measured mass)',color='grey')
+plt.plot(planets.iloc[linked_data_dirty[transits]]['pl_bmassj'],np.asarray(esm)[transits],'H',label='Observed with JWST',markersize=10,markeredgecolor= "black")
 
 plt.xscale('log')
 plt.yscale('log')
@@ -286,8 +289,8 @@ savefig('ESM_all.png',dpi=200)
 
 plt.figure()
 
-plt.plot(eaot['Mp']*317.8,eaot['SNR_Emission_5_micron'],'k.',label='All Exoplanets \n(with measured mass)')
-plt.plot(planets.iloc[linked_data_dirty[transits]]['pl_bmasse'],np.asarray(esm)[transits],'o',color='dodgerblue',label='Observed with JWST')
+plt.plot(eaot['Mp']*317.8,eaot['SNR_Emission_5_micron'],'.',label='All Exoplanets \n(with measured mass)',color='grey')
+plt.plot(planets.iloc[linked_data_dirty[transits]]['pl_bmasse'],np.asarray(esm)[transits],'H',label='Observed with JWST',markersize=10,markeredgecolor= "black")
 
 #plt.xscale('log')
 plt.yscale('log')
@@ -411,3 +414,85 @@ for i in range(len(data)):
 with open('JWST_ExoDashboard_Table_Full.csv', 'w') as mycsvfile:
     writer = csv.writer(mycsvfile)
     writer.writerows(out)
+    
+#Pop gif prep
+from matplotlib.animation import FuncAnimation
+import copy
+tmp = copy.copy(data['Start date'])
+tmp[np.where(tmp == 'X')[0]] = 'Dec_31_2025_23:00:00'
+start_dates = pd.to_datetime(
+    tmp, format='%b_%d_%Y_%H:%M:%S'
+)
+#start_dates = start_dates.assign('link'=pd.Series(linked_data_dirty).values)
+
+new = pd.DataFrame(start_dates)
+new = new.join(pd.Series(linked_data_dirty,name='ldd'))
+new = new.join(pd.Series(data['Status']))
+new = new.sort_values(by='Start date')
+
+archived_new = np.where(new['Status'] == 'Archived')[0]
+planned_new = np.where((new['Status'] == 'FlightReady') | (new['Status'] == 'Implementation'))[0]
+
+fig, ax = plt.subplots(figsize=(9, 6))
+ax.set_yscale('log')
+ax.set_xscale('log')
+ax.set_xlim(1e-1, 1e5)
+ax.set_xlabel('Orbital Period (days)', fontsize=15)
+ax.set_ylabel('Planet Mass (Jupiter Masses)', fontsize=15)
+ax.tick_params(labelsize=14)
+plt.suptitle('JWST Observations', fontsize=16)
+ax.set_title('2021-12-25 12:20:00', fontsize=16)
+ax.grid(True, which="both", linestyle='--', linewidth=0.5)
+
+# Plot static background for all exoplanets
+ax.plot(
+    planets['pl_orbper'],
+    planets['pl_bmassj'],
+    '.',
+    color='grey',
+    label='All Exoplanets',
+    alpha=0.35
+)
+
+ax.plot([], [], 'H', markersize=10, markeredgecolor='black', label='Observed with JWST',color=r'#0072B2')
+ax.plot([], [], 'H', markersize=10, markeredgecolor='black', label='Planned with JWST',color=r'#009E73')
+
+plt.legend(fontsize=14,loc='lower right')
+
+
+
+# Animation update function
+#['#0072B2', '#009E73', '#D55E00', '#CC79A7', '#F0E442', '#56B4E9']
+def update(frame):
+    # Extract current row
+    print(frame)
+    if frame < len(archived_new):
+        print('still printing',new['Start date'].iloc[archived_new[frame]])
+        if ~np.isnan(new.ldd[archived_new[frame]]):
+            ax.plot(planets.iloc[int(new.ldd[archived_new[frame]])]['pl_orbper'],
+                    planets.iloc[int(new.ldd[archived_new[frame]])]['pl_bmassj'],
+                    'H', markersize=10, markeredgecolor='black',color='gold')
+            ax.set_title(new['Start date'].iloc[archived_new[frame]], fontsize=13)
+        if frame > 0:
+            if ~np.isnan(new.ldd[archived_new[frame-1]]):
+                if new.ldd[archived_new[frame]] != new.ldd[archived_new[frame-1]]:
+                    ax.plot(planets.iloc[int(new.ldd[archived_new[frame-1]])]['pl_orbper'],
+                            planets.iloc[int(new.ldd[archived_new[frame-1]])]['pl_bmassj'],
+                            'H', markersize=10, markeredgecolor='black',color=r'#0072B2')
+    if frame == len(archived_new)+8:
+        ax.plot(planets.iloc[int(new.ldd[archived_new[len(archived_new)-9]])]['pl_orbper'],
+                planets.iloc[int(new.ldd[archived_new[len(archived_new)-9]])]['pl_bmassj'],
+                'H', markersize=10, markeredgecolor='black',color=r'#0072B2')
+        print('made it to planned')        
+        ax.plot(planets.iloc[new.ldd[planned_new].values.astype(int)]['pl_orbper'],
+                planets.iloc[new.ldd[planned_new].values.astype(int)]['pl_bmassj'],
+                'H', markersize=10, markeredgecolor='black',color=r'#009E73',zorder=-1)
+    return 
+
+print('MAKING GIF')
+ani = FuncAnimation(fig, update, frames=len(archived_new)+50, interval=175, blit=False)
+
+ani.save('jwst_planets.gif', dpi=150, writer='pillow')
+
+#plt.show()
+plt.close('all')
