@@ -473,10 +473,10 @@ def update(frame):
             ax.plot(planets.iloc[int(new.ldd[archived_new[frame]])]['pl_orbper'],
                     planets.iloc[int(new.ldd[archived_new[frame]])]['pl_bmassj'],
                     'H', markersize=10, markeredgecolor='black',color='gold')
-            ax.text(planets.iloc[int(new.ldd[archived_new[frame]])]['pl_orbper'],
+            ax.text(planets.iloc[int(new.ldd[archived_new[frame]])]['pl_orbper']*1.11,
                     planets.iloc[int(new.ldd[archived_new[frame]])]['pl_bmassj'],
                     planets.iloc[int(new.ldd[archived_new[frame]])]['pl_name'], fontsize=12)
-            ax.set_title(new['Start date'].iloc[archived_new[frame]], fontsize=13)
+            ax.set_title(new['Start date'].iloc[archived_new[frame]], fontsize=14)
         if frame > 0:
             if ~np.isnan(new.ldd[archived_new[frame-1]]):
                 if new.ldd[archived_new[frame]] != new.ldd[archived_new[frame-1]]:
