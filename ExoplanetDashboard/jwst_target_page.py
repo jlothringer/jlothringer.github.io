@@ -235,7 +235,7 @@ savefig('population.png',dpi=200)
 plt.figure()
 
 plt.plot(eaot['Mp'],eaot['SNR_Transmission_K_mag'],'.',color='grey',label='All Exoplanets \n(with measured mass)')
-plt.plot(planets.iloc[linked_data_dirty[transits]]['pl_bmassj'],np.asarray(tsm)[transits],'s',label='Observed with JWST')
+plt.plot(planets.iloc[linked_data_dirty[transits]]['pl_bmassj'],np.asarray(tsm)[transits],'H',label='Observed with JWST')
 
 plt.xscale('log')
 plt.yscale('log')
@@ -253,7 +253,7 @@ savefig('TSM_all.png',dpi=200)
 plt.figure()
 
 plt.plot(eaot['Mp']*317.8,eaot['SNR_Transmission_K_mag'],'.',label='All Exoplanets \n(with measured mass)',color='grey')
-plt.plot(planets.iloc[linked_data_dirty[transits]]['pl_bmasse'],np.asarray(tsm)[transits],'s',label='Observed with JWST')
+plt.plot(planets.iloc[linked_data_dirty[transits]]['pl_bmasse'],np.asarray(tsm)[transits],'H',label='Observed with JWST')
 
 #plt.xscale('log')
 plt.yscale('log')
