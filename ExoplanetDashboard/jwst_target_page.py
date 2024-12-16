@@ -17,6 +17,7 @@ from datetime import datetime
 #cs = ['#1f77b4', '#ff7f0e', '#d62728','#2ca02c', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 
 plt.style.use('seaborn-v0_8-colorblind')
+rcParams['text.usetex'] = True
 
 def ra_to_deg(hours,minutes,seconds):
     #return 360*hours/24+minutes/60+seconds/60/60
@@ -437,12 +438,20 @@ fig, ax = plt.subplots(figsize=(9, 6))
 ax.set_yscale('log')
 ax.set_xscale('log')
 ax.set_xlim(1e-1, 1e5)
-ax.set_xlabel('Orbital Period (days)', fontsize=15)
-ax.set_ylabel('Planet Mass (Jupiter Masses)', fontsize=15)
+ax.set_xlabel('Orbital Period (days)', fontsize=16)
+ax.set_ylabel('Planet Mass (Jupiter Masses)', fontsize=16)
 ax.tick_params(labelsize=14)
 plt.suptitle('JWST Exoplanet Observations', fontsize=16)
 ax.set_title('2021-12-25 12:20:00', fontsize=16)
 ax.grid(True, which="both", linestyle='--', linewidth=0.5)
+fig.text(0.82,0.02,'Credit: Josh Lothringer')
+#fig.text(0.85,0.5,'$10^{14} M_{☉}$')
+fig.text(0.891,0.34,'1 Earth Mass')
+fig.text(0.891,0.45,'1 Neptune Mass')
+fig.text(0.891,0.58,'1 Jupiter Mass')
+
+plt.subplots_adjust(right=0.886)
+
 
 # Plot static background for all exoplanets
 ax.plot(
@@ -453,6 +462,8 @@ ax.plot(
     label='All Exoplanets',
     alpha=0.35, zorder=-2
 )
+
+#tight_layout()
 
 ax.plot([], [], 'H', markersize=10, markeredgecolor='black', label='Observed with JWST',color=r'#0072B2')
 ax.plot([], [], 'H', markersize=10, markeredgecolor='black', label='Planned with JWST',color=r'#009E73')
