@@ -282,8 +282,11 @@ ga('send', 'pageview');
                 to understand what <i>kinds</i> of planets JWST has observed.
             </h5>
 	    <p>
-	      First, the nearest exoplanet system in the NASA Exoplanet Archive to each JWST observation in TrExoLiSTS is identified. For multi-planet systems, the planet being observed is identified by finding the planet whose transit duration is closest to approximately half of the observing time. Planet properties are then simply appended to each row in TrExoLiSTS, and voila!
-	      </p>
+	      First, the nearest exoplanet system in the NASA Exoplanet Archive to each JWST observation in TrExoLiSTS DIExoLiSTS is identified. For multi-planet systems, the planet being observed is identified by finding the planet whose transit duration is closest to approximately half of the observing time. Planet properties are then simply appended to each row in TrExoLiSTS, and voila!
+	    </p>
+	    <p>
+	      A disclaimer: Planets may be identified incorrectly, especially in multi-planet systems. For example, right now, it thinks every TRAPPIST-1 observations is of planet h. This is especially tricky for multi-planet directly imaged planets. If you run into issues or bugs, let me know!
+	    </p>
         </header>
 
         <section class="card">
@@ -300,12 +303,15 @@ ga('send', 'pageview');
           </section>
     <script>
     const statLabels = [
-        { label: 'Planets observed' },
         { label: 'Total hours observed' },
+        { label: 'Planets observed' },
         { label: 'Additional planets planned' },
-        { label: 'Rocky planets observed (incl. planned)', hoursIndex: 6 },
-        { label: 'Neptune-like planets observed (incl. planned)', hoursIndex: 7 },
-        { label: 'Gas giant planets observed (incl. planned)', hoursIndex: 8 }
+	{ label: 'Hours on transiting exoplanets' },
+	{ label: 'Hours on directly imaged exoplanets' },
+	{ label: 'Hours on the TRAPPIST-1 system' },
+        { label: 'Rocky planets observed (incl. planned)', hoursIndex: 9 },
+        { label: 'Neptune-like planets observed (incl. planned)', hoursIndex: 10 },
+        { label: 'Gas giant planets observed (incl. planned)', hoursIndex: 11 }
     ];
 
       const plots = [
