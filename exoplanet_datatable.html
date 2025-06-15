@@ -3,185 +3,383 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exoplanet Atmospheric Measurements</title>
+    <title>Exoplanet Atmosphereic Composition Measurements</title>
     
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
     
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f3a 25%, #2d1b69 50%, #1e3a8a 75%, #0f172a 100%);
+            background-attachment: fixed;
             min-height: 100vh;
             padding: 20px 0;
+            position: relative;
+        }
+        
+        /* Subtle star field effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.4), transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.7), transparent),
+                radial-gradient(1px 1px at 160px 30px, rgba(255,255,255,0.5), transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            pointer-events: none;
+            z-index: -1;
         }
         
         .container-fluid {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-            padding: 30px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 20px;
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(251, 191, 36, 0.1);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            position: relative;
+        }
+        
+        /* JWST-inspired golden accent glow */
+        .container-fluid::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #fbbf24, #f59e0b, #d97706, #92400e);
+            border-radius: 22px;
+            z-index: -1;
+            opacity: 0.3;
+            filter: blur(8px);
         }
         
         h1 {
-            color: #2c3e50;
+            color: #fbbf24;
             text-align: center;
-            margin-bottom: 30px;
-            font-weight: 300;
-            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 2.8rem;
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+            letter-spacing: -0.5px;
         }
-        
+
+        h2 {
+            color: #fbbf24;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 500;
+            font-size: 2.2rem;
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+            letter-spacing: -0.5px;
+        }
+
         .subtitle {
             text-align: center;
-            color: #6c757d;
+            color: #cbd5e1;
             margin-bottom: 40px;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .table-responsive {
-            border-radius: 10px;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.2);
         }
         
         .table thead th {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #581c87 100%);
+            color: #fbbf24;
             border: none;
-            font-weight: 500;
+            font-weight: 600;
             text-transform: uppercase;
             font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            padding: 15px 8px;
+            letter-spacing: 1px;
+            padding: 18px 12px;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+            position: relative;
+        }
+        
+        .table thead th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #fbbf24, transparent);
+        }
+        
+        .table {
+            background: rgba(15, 23, 42, 0.9);
+            margin-bottom: 0;
         }
         
         .table tbody tr {
             transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+            background: rgba(30, 41, 59, 0.3);
         }
         
         .table tbody tr:hover {
-            background-color: rgba(102, 126, 234, 0.1);
+            background: rgba(30, 58, 138, 0.2);
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.1);
         }
         
         .table td {
-            border-color: #e9ecef;
-            padding: 12px 8px;
+            border-color: rgba(51, 65, 85, 0.3);
+            padding: 15px 12px;
             vertical-align: middle;
+            color: #e2e8f0;
+        }
+        
+        .dataTables_wrapper {
+            color: #cbd5e1;
         }
         
         .dataTables_wrapper .dataTables_length select,
         .dataTables_wrapper .dataTables_filter input {
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            padding: 8px 12px;
-            transition: border-color 0.3s ease;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: #e2e8f0;
+            transition: all 0.3s ease;
         }
         
         .dataTables_wrapper .dataTables_filter input:focus {
-            border-color: #667eea;
+            border-color: #fbbf24;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
+            background: rgba(30, 41, 59, 1);
+        }
+        
+        .dataTables_wrapper .dataTables_filter input::placeholder {
+            color: #94a3b8;
         }
         
         .dataTables_wrapper .dataTables_paginate .paginate_button {
-            border-radius: 6px;
-            margin: 0 2px;
+            border-radius: 8px;
+            margin: 0 3px;
+            background: rgba(30, 41, 59, 0.6) !important;
+            border: 1px solid rgba(251, 191, 36, 0.3) !important;
+            color: #cbd5e1 !important;
+        }
+        
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: rgba(251, 191, 36, 0.2) !important;
+            border-color: #fbbf24 !important;
+            color: #fbbf24 !important;
         }
         
         .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-            background: linear-gradient(45deg, #667eea, #764ba2) !important;
-            border-color: #667eea !important;
-            color: white !important;
+            background: linear-gradient(45deg, #fbbf24, #f59e0b) !important;
+            border-color: #fbbf24 !important;
+            color: #0f172a !important;
+            font-weight: 600;
+        }
+        
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_length label {
+            color: #94a3b8;
         }
         
         .planet-name {
             font-weight: 600;
-            color: #2c3e50;
+            color: #fbbf24;
+            text-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
         }
         
         .status-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
+            padding: 6px 12px;
+            border-radius: 15px;
             font-size: 0.8rem;
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .status-published {
-            background-color: #d4edda;
-            color: #155724;
+            background: linear-gradient(45deg, #059669, #047857);
+            color: #ecfdf5;
+            box-shadow: 0 0 10px rgba(5, 150, 105, 0.3);
         }
         
         .status-submitted {
-            background-color: #fff3cd;
-            color: #856404;
+            background: linear-gradient(45deg, #d97706, #b45309);
+            color: #fffbeb;
+            box-shadow: 0 0 10px rgba(217, 119, 6, 0.3);
         }
         
         .status-prep {
-            background-color: #cce7ff;
-            color: #004085;
+            background: linear-gradient(45deg, #2563eb, #1d4ed8);
+            color: #eff6ff;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
         }
         
         .status-press {
-            background-color: #e2e3e5;
-            color: #383d41;
+            background: linear-gradient(45deg, #7c3aed, #6d28d9);
+            color: #f3e8ff;
+            box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
         }
         
         .stats-container {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             flex-wrap: wrap;
+            gap: 20px;
         }
         
         .stat-card {
-            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-            border-radius: 10px;
-            padding: 20px;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.3), rgba(88, 28, 135, 0.3));
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 15px;
+            padding: 25px 20px;
             text-align: center;
-            min-width: 150px;
-            margin: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            min-width: 160px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+            border-color: #fbbf24;
+        }
+        
+        .stat-card:hover::before {
+            left: 100%;
         }
         
         .stat-number {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            color: #667eea;
+            color: #fbbf24;
+            text-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+            margin-bottom: 5px;
         }
         
         .stat-label {
-            color: #6c757d;
+            color: #cbd5e1;
             font-size: 0.9rem;
-            margin-top: 5px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 6px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #fbbf24, #f59e0b);
+            border-radius: 6px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+        }
+        
+        .alert-danger {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            color: #fca5a5;
+            border-radius: 12px;
         }
     </style>
 </head>
 <body>
     <div class="container-fluid">
-        <h1>🪐 Exoplanet Atmospheric Measurements</h1>
-        <p class="subtitle">Comprehensive database of atmospheric composition measurements from various observation methods</p>
-        
+        <h1>The ExoComp Table</h1>
+        <p class="subtitle">A table of atmospheric composition measurements for gaseous exoplanets.
+	  <br>
+	  <br>
+          Observations are from direct imaging, eclipse spectroscopy, and transmission spectroscopy using JWST and/or 8-meter-class ground-based facilities.
+	  <br>
+	  <br>
+	  We currently restrict the table to quoted metallicity and C/O measurements of hydrogen-dominated atmospheres from atmosphere retrievals. In the future, we hope to add free retrieval results.
+	</p>
+	<p style="color:red;">
+	  If you notice errors or have measurements to add, email jlothringer [[at]] stsci.edu
+	</p>
         <div class="stats-container" id="statsContainer">
             <!-- Stats will be populated by JavaScript -->
         </div>
-        
+
+<div class="text-center mb-4">
+    <a href="Exoplanet_Atmo_Measurements.csv" download class="btn btn-outline-warning btn-lg" style="
+        background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
+        border: 2px solid #fbbf24;
+        color: #fbbf24;
+        border-radius: 12px;
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(251, 191, 36, 0.2);
+        text-decoration: none;
+    " onmouseover="this.style.background='linear-gradient(135deg, #fbbf24, #f59e0b)'; this.style.color='#0f172a'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(251, 191, 36, 0.4)'" onmouseout="this.style.background='linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1))'; this.style.color='#fbbf24'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(251, 191, 36, 0.2)'">
+        📥 Download CSV Data
+    </a>
+</div>
+	
         <div class="table-responsive">
-            <table id="exoplanetTable" class="table table-striped table-hover" style="width:100%">
+            <table id="exoplanetTable" class="table table-hover" style="width:100%">
                 <thead>
                     <tr>
                         <th>Planet</th>
                         <th>Status</th>
                         <th>Geometry</th>
                         <th>Observatory</th>
-                        <th>C/O Ratio</th>
                         <th>Metallicity</th>
+                        <th>C/O Ratio</th>
                         <th>Mass (MJ)</th>
                         <th>T_eq (K)</th>
                         <th>Reference</th>
-                        <th>Notes</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -317,7 +515,7 @@
         async function initializeTable() {
             // Show loading message
             const tableBody = $('#exoplanetTable tbody');
-            tableBody.html('<tr><td colspan="10" class="text-center"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div> Loading data...</td></tr>');
+            tableBody.html('<tr><td colspan="10" class="text-center"><div class="spinner-border text-warning" role="status"><span class="sr-only">Loading...</span></div> Loading data...</td></tr>');
             
             // Load CSV file
             const csvData = await loadCSV(CSV_FILE_PATH);
@@ -341,12 +539,11 @@
                         <td>${getStatusBadge(row.Status)}</td>
                         <td>${row.Geometry}</td>
                         <td>${formatObservatory(row.Obs)}</td>
-                        <td>${row['C/O'] || '-'}</td>
                         <td>${row.Metallicity || '-'}</td>
+                        <td>${row['C/O'] || '-'}</td>
                         <td>${row.Mass || '-'}</td>
                         <td>${row.T_eq || '-'}</td>
                         <td>${row.Reference}</td>
-                        <td>${row.Notes || '-'}</td>
                     </tr>
                 `);
                 tableBody.append(tr);
