@@ -47,9 +47,21 @@ def to_julian_date(timestamp_str):
     
     return jd
 
-data_tr = pd.read_csv('trexolists_jwst.csv')
-data_tr['Groups'] = data_tr['Groups'].astype(str)
+#data_tr = pd.read_csv('trexolists_jwst.csv')
+data_tr = pd.read_csv('03_trexolists_extended.csv')
 
+data_tr['Groups'] = data_tr['Groups'].astype(str)
+data_tr['R.A. 2000'] = [data_tr['EquatorialCoordinates'][i][:13].strip() for i in range(len(data_tr))]
+data_tr['Dec. 2000'] = [data_tr['EquatorialCoordinates'][i][13:].strip() for i in range(len(data_tr))]
+data_tr['Target'] = data_tr['hostname_nn'] + ' ' + data_tr['letter_nn']
+
+# Convert to datetime
+# Replace known bad values with NaN
+tmp = data_tr['StartTime'].replace(['', 'X'], pd.NA)
+tmp2 = pd.to_datetime(tmp)
+
+# Format to desired string
+data_tr['Start date'] = tmp2.dt.strftime('%b_%d_%Y_%H:%M:%S')
 
 data_di = pd.read_csv('diexolists.csv')
 data_di['Groups'] = data_di['Groups'].astype(str)
@@ -58,9 +70,12 @@ data = pd.concat([data_tr,data_di],axis=0,ignore_index=True)
 
 #data = data_tr
 
-archived = np.where(data['Status'] == 'Archived')[0]
+archived = np.where((data['Status'] == 'Archived') | (data['Status'] == 'Executed'))[0]
+#archived = np.append(archived,(np.where(data['Status'] == 'Executed')[0]))
 #planned = np.where(data['Status'] != 'Archived')[0]
-planned = np.where((data['Status'] == 'FlightReady') | (data['Status'] == 'Implementation'))[0]
+planned = np.where((data['Status'] == 'FlightReady') | (data['Status'] == 'Implementation') | 
+                   (data['Status'] == 'Flight Ready') | (data['Status'] == 'Scheduled') |
+                   (data['Status'] == 'PendingSubmission') | (data['Status'] == 'On Hold (Inactive)')| (data['Status'] == 'Inactive'))[0]
 
 transits = np.where(data['Event'] == 'Transit')[0]
 eclipses = np.where(data['Event'] == 'Eclipse')[0]
@@ -72,7 +87,8 @@ data_ra = [ra_to_deg(float(data['R.A. 2000'][i][0:2]),float(data['R.A. 2000'][i]
 data_dec = [dec_to_deg(float(data['Dec. 2000'][i][0:3]),float(data['Dec. 2000'][i][4:6]),float(data['Dec. 2000'][i][7:])) for i in range(len(data['R.A. 2000']))]
 
 #planets = pd.read_csv('allinfo-csv.csv')
-planets = pd.read_csv('PSCompPars_2024.10.26_05.54.48.csv')
+#planets = pd.read_csv('PSCompPars_2024.10.26_05.54.48.csv')
+planets = pd.read_csv('PSCompPars_2025.07.19_09.55.03.csv')
 eaot = pd.read_csv('search.csv')
 ra_planets_rad = planets['ra']*np.pi/180.
 dec_planets_rad = planets['dec']*np.pi/180.
@@ -94,7 +110,7 @@ for i in range(len(data)):
     #If distance is more than 1/1000th of a degree, then we probably didn't find anything,
     #which would be the case if this observation was of a disk or was a *search* for planets
     #And we're not counting that here... would be cool to add info on that tho.
-    if min(r) > 1e-5:
+    if min(r) > 1e-4:
         print('Having trouble with '+str(i))
         print(data.iloc[i]['Target'])
         tsm.append(0.0)
@@ -198,27 +214,40 @@ DI_planets_inds = np.where((data['Event'] == 'DI') & ~np.isnan(linked_data_dirty
 
 
 uniq_planet = len(unique(linked_data))
-print('Planets observed:',len(unique(linked_data_dirty[archived])),'<br>')
-print('Total hours observed:',round(np.sum(data['Hours'][archived])),'<br>')
+#print('Planets observed:',len(unique(linked_data_dirty[archived])),'<br>')
+#print('Total hours observed:',round(np.sum(data['Hours'][archived])),'<br>')
+print('Planets observed:',len(data.loc[archived].groupby(['hostname_nn', 'letter_nn']).size()),'<br>')
+print('Total hours observed:',round(np.sum(data['Hours'][archived]),1),'<br>')
 
 uniq_planned = np.array([linked_data_dirty[planned][i] in linked_data_dirty[archived] for i in range(len(planned))])
 
 #print('Total planets planned:',len(np.where(uniq_planned == False)[0]))
-print('Additional planets planned: ',uniq_planet - len(unique(linked_data_dirty[archived])),'<br>')
+print('Additional new planets planned: ',uniq_planet - len(unique(linked_data_dirty[archived])),'<br>')
 #print('Total hours observed:',np.sum(data['Hours'][planned]))
 
 
-print('Total transiting rocky planets observed (incl. planned):',len(unique(linked_data[SEs])),'<br>')
-print('for a total of ', round(np.sum(data['Hours'][list(set(SEs) & set(archived))])),' hours of rocky exoplanet observation <br>')
+#print('Total transiting rocky planets observed (incl. planned):',len(unique(linked_data[SEs])),'<br>')
+#print('for a total of ', round(np.sum(data['Hours'][list(set(SEs) & set(archived))])),' hours of rocky exoplanet observation <br>')
+print('Total transiting rocky planets observed (incl. planned):',len(np.where(np.unique(data['pl_radj']) < 0.152)[0]),'<br>')
+print('for a total of ', np.round(np.sum(data['Hours'][list(set(np.where(data['pl_radj'] < 0.152)[0]) & set(archived))]),1),' hours of rocky exoplanet observation <br>')
 
-print('Total transiting Neptune-like planets observed (incl. planned):',len(unique(linked_data[Neps])), '<br>')
-print('for a total of ', round(np.sum(data['Hours'][list(set(Neps) & set(archived))])),' hours of Neptune-like exoplanet observation <br>')
+#print('Total transiting Neptune-like planets observed (incl. planned):',len(unique(linked_data[Neps])), '<br>')
+#print('for a total of ', round(np.sum(data['Hours'][list(set(Neps) & set(archived))])),' hours of Neptune-like exoplanet observation <br>')
+print('Total transiting Neptune-like planets observed (incl. planned):',len(np.where((np.unique(data['pl_radj']) < 0.44) & (np.unique(data['pl_radj']) > 0.152))[0]), '<br>')
+print('for a total of ', np.round(np.sum(data['Hours'][list(set(np.where((data['pl_radj'] < 0.44) & (data['pl_radj'] > 0.152))[0]) & set(archived))]),1),' hours of Neptune-like exoplanet observation <br>')
 
-print('Total transiting giants planets observed (incl. planned):',len(unique(linked_data[HJs])),'<br>')
-print('for a total of ', round(np.sum(data['Hours'][list(set(HJs) & set(archived))])),' hours of gas giant exoplanet observation <br>')
+#print('Total transiting giants planets observed (incl. planned):',len(unique(linked_data[HJs])),'<br>')
+#print('for a total of ', round(np.sum(data['Hours'][list(set(HJs) & set(archived))])),' hours of gas giant exoplanet observation <br>')
+print('Total transiting giants planets observed (incl. planned):',len(np.where(np.unique(data['pl_radj']) > 0.44)[0]),'<br>')
+print('for a total of ', np.round(np.sum(data['Hours'][list(set(np.where(data['pl_radj'] > 0.44)[0]) & set(archived))]),1),' hours of gas giant exoplanet observation <br>')
 
-print('Total transiting planets observed (incl. planned):',len(unique(transiting_planets)),'<br>')
-print('for a total of ', round(np.sum(data['Hours'][list(set(transit_planets_inds) & set(archived))])),' hours of transiting exoplanet observation <br>')
+total = len(np.where(np.unique(data['pl_radj']) > 0.0)[0])
+total_hours = np.round(np.sum(data['Hours'][list(set(np.where(data['pl_radj'] > 0.0)[0]) & set(archived))]),1)
+
+#print('Total transiting planets observed (incl. planned):',len(unique(transiting_planets)),'<br>')
+#print('for a total of ', round(np.sum(data['Hours'][list(set(transit_planets_inds) & set(archived))])),' hours of transiting exoplanet observation <br>')
+print('Total transiting planets observed (incl. planned):',total,'<br>')
+print('for a total of ', total_hours,' hours of transiting exoplanet observation <br>')
 
 print('Total directly imaged planets observed (incl. planned):',len(unique(DI_planets)),'<br>')
 print('for a total of ', round(np.sum(data['Hours'][list(set(DI_planets_inds) & set(archived))])),' hours of characterizing directly imaged exoplanets <br>')
@@ -228,22 +257,42 @@ print('for a total of ', round(np.sum(data['Hours'][np.where(data['Event'] == 'D
 #print('Total transiting planets observed (incl. planned):',len(unique(linked_data[HJs])),'<br>')
 #print('for a total of ', round(np.sum(data['Hours'][list(set(HJs) & set(archived))])),' hours of gas giant exoplanet observation <br>')
 
+# out = []
+# out.append([round(np.sum(data['Hours'][archived]))])     # hours spent observing exoplanets
+# out.append([len(unique(linked_data_dirty[archived]))])   # number of planets observed
+# out.append([uniq_planet - len(unique(linked_data_dirty[archived]))]) #number of planets still to be observed
+
+# out.append([round(np.sum(data['Hours'][np.where((data['Event'] != 'DI') & (data['Status'] == 'Archived'))[0]]))]) #hours spent on transiting systems
+# out.append([round(np.sum(data['Hours'][np.where((data['Event'] == 'DI') & (data['Status'] == 'Archived'))[0]]))]) #hours spent on DI systems
+# out.append([round(np.sum(data['Hours'].iloc[np.where(data['Target'] == 'TRAPPIST-1')]))]) #hours spent on Trappist-1
+
+
+# out.append([len(unique(linked_data[SEs]))])  # transiting obs of terrestrial planets
+# out.append([len(unique(linked_data[Neps]))]) # transiting obs of Neptune-like planets
+# out.append([len(unique(linked_data[HJs]))])  # Transiting obs of giant planets
+# out.append([round(np.sum(data['Hours'][list(set(SEs) & set(archived))]))]) #hours on transiting terrestrials
+# out.append([round(np.sum(data['Hours'][list(set(Neps) & set(archived))]))]) #hours on Neps 
+# out.append([round(np.sum(data['Hours'][list(set(HJs) & set(archived))]))]) #hours on giant planets 
+
 out = []
-out.append([round(np.sum(data['Hours'][archived]))])     # hours spent observing exoplanets
-out.append([len(unique(linked_data_dirty[archived]))])   # number of planets observed
+out.append([round(np.sum(data['Hours'][archived]),1)])     # hours spent observing exoplanets
+out.append([len(data.loc[archived].groupby(['hostname_nn', 'letter_nn']).size())])   # number of planets observed
 out.append([uniq_planet - len(unique(linked_data_dirty[archived]))]) #number of planets still to be observed
 
-out.append([round(np.sum(data['Hours'][np.where((data['Event'] != 'DI') & (data['Status'] == 'Archived'))[0]]))]) #hours spent on transiting systems
-out.append([round(np.sum(data['Hours'][np.where((data['Event'] == 'DI') & (data['Status'] == 'Archived'))[0]]))]) #hours spent on DI systems
-out.append([round(np.sum(data['Hours'].iloc[np.where(data['Target'] == 'TRAPPIST-1')]))]) #hours spent on Trappist-1
+out.append([round(np.sum(data['Hours'][np.where((data['Event'] != 'DI') & ((data['Status'] == 'Archived') | (data['Status'] == 'Executed')))[0]]))]) #hours spent on transiting systems
+out.append([round(np.sum(data['Hours'][np.where((data['Event'] == 'DI') & ((data['Status'] == 'Archived') | (data['Status'] == 'Executed')))[0]]))]) #hours spent on DI systems
+out.append([round(np.sum(data['Hours'].iloc[np.where(data['hostname_nn'] == 'TRAPPIST-1')]))]) #hours spent on Trappist-1
+
+#at some point, make a list of top 5 planets: data.loc[archived, ['hostname_nn', 'letter_nn']].value_counts()
 
 
-out.append([len(unique(linked_data[SEs]))])  # transiting obs of terrestrial planets
-out.append([len(unique(linked_data[Neps]))]) # transiting obs of Neptune-like planets
-out.append([len(unique(linked_data[HJs]))])  # Transiting obs of giant planets
-out.append([round(np.sum(data['Hours'][list(set(SEs) & set(archived))]))]) #hours on transiting terrestrials
-out.append([round(np.sum(data['Hours'][list(set(Neps) & set(archived))]))]) #hours on Neps 
-out.append([round(np.sum(data['Hours'][list(set(HJs) & set(archived))]))]) #hours on giant planets 
+out.append([len(np.where(np.unique(data['pl_radj']) < 0.152)[0])])  # transiting obs of terrestrial planets
+out.append([len(np.where((np.unique(data['pl_radj']) < 0.44) & (np.unique(data['pl_radj']) > 0.152))[0])]) # transiting obs of Neptune-like planets
+out.append([len(np.where(np.unique(data['pl_radj']) > 0.44)[0])])  # Transiting obs of giant planets
+out.append([np.round(np.sum(data['Hours'][list(set(np.where(data['pl_radj'] < 0.152)[0]) & set(archived))]),1)]) #hours on transiting terrestrials
+out.append([np.round(np.sum(data['Hours'][list(set(np.where((data['pl_radj'] < 0.44) & (data['pl_radj'] > 0.152))[0]) & set(archived))]),1)]) #hours on Neps 
+out.append([np.round(np.sum(data['Hours'][list(set(np.where(data['pl_radj'] > 0.44)[0]) & set(archived))]),1)]) #hours on giant planets 
+
 
 with open('Dashboard_Block05.txt', 'w', newline='') as mycsvfile:
     writer = csv.writer(mycsvfile, quoting=csv.QUOTE_NONE)
@@ -566,8 +615,11 @@ new = new.sort_values(by='Start date')
 invalid_periods = [1312,1345,1240,514,5757,4826,4787,49,1256]
 planets['pl_orbper'].iloc[invalid_periods] = 1e5
 
-archived_new = np.where((new['Status'] == 'Archived') & (~np.isnan(new['ldd'])))[0]
-planned_new = np.where((new['Status'] == 'FlightReady') | (new['Status'] == 'Implementation'))[0]
+archived_new = np.where(((new['Status'] == 'Archived')  | (new['Status'] == 'Executed')) & (~np.isnan(new['ldd'])))[0]
+#planned_new = np.where((new['Status'] == 'FlightReady') | (new['Status'] == 'Implementation'))[0]
+planned_new = np.where((new['Status'] == 'FlightReady') | (new['Status'] == 'Implementation') | 
+                   (new['Status'] == 'Flight Ready') | (new['Status'] == 'Scheduled') |
+                   (new['Status'] == 'PendingSubmission') | (new['Status'] == 'On Hold (Inactive)')| (new['Status'] == 'Inactive'))[0]
 
 # Create figure and initial plot
 fig, ax = plt.subplots(figsize=(9, 6))
