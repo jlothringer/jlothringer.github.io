@@ -483,7 +483,7 @@
                 total: data.length,
                 published: data.filter(row => row.Status.toLowerCase() === 'published').length,
                 transit: data.filter(row => row.Geometry.toLowerCase() === 'transit').length,
-                emission: data.filter(row => row.Geometry.toLowerCase() === 'emission').length,
+                emission: data.filter(row => row.Geometry.toLowerCase() === 'eclipse').length,
                 direct: data.filter(row => row.Geometry.toLowerCase() === 'direct').length
             };
             
