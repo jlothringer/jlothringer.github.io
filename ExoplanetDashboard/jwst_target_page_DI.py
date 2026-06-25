@@ -505,12 +505,12 @@ for i in range(len(data)):
 
 
     out.append(['<td> '+str(data['Event'][i])+' </td>'])
-    out.append(['<td> '+str(data['Mode'][i])+' </td>'])   
+    out.append(['<td> '+str(data['ObservingMode'][i])+' </td>'])   
     out.append(['<td> '+str(data['Status'][i])+' </td>'])
 
-    out.append(['<td> '+str(data['Category'][i])+' </td>'])
-    out.append(['<td> '+str(data['Program'][i])+' </td>'])
-    out.append(['<td> '+str(data['PI name'][i])+' </td>'])
+    out.append(['<td> '+str(data['ProposalCategory'][i])+' </td>'])
+    out.append(['<td> '+str(data['ProposalID'][i])+' </td>'])
+    out.append(['<td> '+str(data['LastName'][i])+' </td>'])
 
 
     out.append(['</tr>'])
@@ -532,15 +532,15 @@ for i in range(len(data)):
                planets.iloc[int(linked_data_dirty[i])]['pl_bmassj'],planets.iloc[int(linked_data_dirty[i])]['pl_bmasse'],
                planets.iloc[int(linked_data_dirty[i])]['pl_radj'],planets.iloc[int(linked_data_dirty[i])]['pl_rade'],
                planets.iloc[int(linked_data_dirty[i])]['pl_eqt'],planets.iloc[int(linked_data_dirty[i])]['st_spectype'],
-               planets.iloc[int(linked_data_dirty[i])]['sy_vmag'],data['Event'][i],data['Mode'][i],data['Status'][i],
-               data['Category'][i],data['Program'][i],data['PI name'][i]]
+               planets.iloc[int(linked_data_dirty[i])]['sy_vmag'],data['Event'][i],data['ObservingMode'][i],data['Status'][i],
+               data['ProposalCategory'][i],data['ProposalID'][i],data['LastName'][i]]
     except:
         tmp = [data['Target'][i],'-','-','-',
                '-','-',
                '-','-',
                '-','-',
-               '-',data['Event'][i],data['Mode'][i],data['Status'][i],
-               data['Category'][i],data['Program'][i],data['PI name'][i]]
+               '-',data['Event'][i],data['ObservingMode'][i],data['Status'][i],
+               data['ProposalCategory'][i],data['ProposalID'][i],data['LastName'][i]]
     out.append(tmp)
         
 with open('JWST_ExoDashboard_Table.csv', 'w') as mycsvfile:
